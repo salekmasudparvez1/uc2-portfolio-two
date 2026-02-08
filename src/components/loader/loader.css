@@ -1,0 +1,59 @@
+/* overlay */
+.loader-overlay {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  inset: 0;
+  background: rgb(255, 255, 255); /* Increased opacity slightly for better contrast */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* border-radius removed as overlay is full screen */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+/* spinner container */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  display: grid;
+  border-radius: 50%;
+  /* Using mask to create a clean ring effect */
+  background: 
+    conic-gradient(#0000 10%, #a855f7);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 5px), #000 0);
+  animation: spin 1s infinite linear;
+}
+
+/* Optional: Adding an inner glow or second ring */
+.loader::before {
+  content: "";
+  grid-area: 1/1;
+  margin: 4px;
+  border-radius: 50%;
+  background: 
+    conic-gradient(#0000 10%, #ccc);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 4px), #000 0);
+  animation: spin 2s infinite linear reverse;
+}
+
+/* animation */
+@keyframes spin {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+/* loader text */
+.loader-text {
+  margin-top: 16px;
+  font-size: 16px;
+  color: #1a1a1a;
+  font-weight: 600;
+  text-align: center;
+  font-family: sans-serif;
+}
