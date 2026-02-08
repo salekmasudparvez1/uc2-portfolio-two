@@ -16,7 +16,7 @@ const Footer = ({
   };
 
   return (
-    <footer className="relative bg-gray-900 mb-4 text-white rounded-t-[2.5rem] p-8 md:p-16 mt-20 overflow-hidden">
+    <footer className="relative bg-gray-900  text-white rounded-t-[2.5rem] p-8 md:p-16 mt-20 overflow-hidden">
       {/* Background Glow Decor */}
       <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#a855f7]/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
