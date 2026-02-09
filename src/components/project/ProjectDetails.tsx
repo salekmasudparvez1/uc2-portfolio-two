@@ -60,7 +60,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       className="
         relative w-full max-w-6xl bg-[#fafafa] rounded-md 
-        max-h-[85vh] overflow-y-auto overflow-x-hidden
+        md:max-h-[85vh] max-h-[95vh] overflow-y-auto overflow-x-hidden
         shadow-2xl outline-none
       "
       style={{ scrollbarWidth: 'thin', scrollbarColor: '#a855f7 transparent' }}
@@ -70,7 +70,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
           
           {/* LEFT COLUMN: Media & Meta */}
           <div className="lg:sticky lg:top-0 h-fit space-y-8">
-            <div className="relative rounded-[2rem] overflow-hidden bg-white shadow-lg group aspect-video lg:aspect-square border border-gray-100">
+            <div className="relative rounded-md overflow-hidden bg-white shadow-lg group aspect-video lg:aspect-square border border-gray-100">
               <img
                 src={project.image}
                 alt={project.title}

@@ -73,7 +73,7 @@ const ProjectSection = ({
                   isAllVisible ? INITIAL_VISIBLE : projects.length,
                 )
               }
-              className="px-10 py-4 rounded-2xl font-semibold text-white
+              className="px-10 py-4 rounded-md font-semibold text-white
                 bg-gradient-to-r from-[#a855f7] to-blue-500
                 hover:scale-105 transition-transform shadow-lg"
             >

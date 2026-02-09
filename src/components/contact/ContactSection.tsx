@@ -95,9 +95,9 @@ const ContactSection = ({ contact, updateField }: {
           </div>
 
           {/* Email Copy */}
-          <div className="group inline-flex items-center gap-4 p-2 pl-4 pr-3 rounded-2xl bg-gray-50 border border-gray-100 transition-all hover:border-purple-300">
+          <div className="group inline-flex items-center gap-4 p-2 pl-4 pr-3 rounded-md bg-gray-50 border border-gray-100 transition-all hover:border-purple-300">
             <span className="font-medium text-gray-800">{contact.email}</span>
-            <button onClick={copyToClipboard} className="p-2 rounded-xl bg-white shadow-sm border border-gray-100 text-gray-500 hover:text-purple-500 transition-all active:scale-90">
+            <button onClick={copyToClipboard} className="p-2 rounded-md bg-white shadow-sm border border-gray-100 text-gray-500 hover:text-purple-500 transition-all active:scale-90">
               {copied ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>

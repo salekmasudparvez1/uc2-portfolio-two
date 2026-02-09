@@ -128,7 +128,7 @@ const HeroSection = ({
           <div className="mt-8">
             <button
               onClick={() => onNavigate?.({ page: "contact", id: 1 })}
-              className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg
+              className="group inline-flex items-center gap-2 px-6 py-3 rounded-md
               bg-[#a855f7] text-white text-sm sm:text-base font-medium
               hover:bg-[#9333ea] transition duration-300"
             >

@@ -90,11 +90,11 @@ const SkillsSection = ({
               key={groupIdx}
               variants={cardVariants}
               whileHover={{ y: -8 }}
-              className="group p-8 rounded-3xl bg-[#fafafa] border border-gray-100 hover:border-[#a855f7]/30 hover:bg-white hover:shadow-xl hover:shadow-[#a855f7]/5 transition-all duration-300"
+              className="group p-8 rounded-md bg-[#fafafa] border border-gray-100 hover:border-[#a855f7]/30 hover:bg-white hover:shadow-xl hover:shadow-[#a855f7]/5 transition-all duration-300"
             >
               {/* Icon & Title */}
               <div className="mb-6 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-md bg-white border border-gray-100 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                   {getIcon(groupIdx)}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">

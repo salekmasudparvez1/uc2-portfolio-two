@@ -16,7 +16,7 @@ const Footer = ({
   };
 
   return (
-    <footer className="relative bg-gray-900  text-white rounded-t-[2.5rem] p-8 md:p-16 mt-20 overflow-hidden">
+    <footer className="relative bg-gray-900  text-white rounded-t-md p-8 md:p-16 mt-20 overflow-hidden">
       {/* Background Glow Decor */}
       <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#a855f7]/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
@@ -33,9 +33,9 @@ const Footer = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onNavigate?.({ page: 'contact', id: 1 })}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-white text-gray-900 rounded-2xl font-bold transition-colors hover:bg-[#a855f7] hover:text-white"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-white text-gray-900  font-bold transition-colors hover:bg-[#a855f7] hover:text-white rounded-md"
             >
-              {footer.ctaLinkText}
+              {footer.ctaLinkText} 
               <ExternalLink className="w-4 h-4" />
             </motion.button>
           </div>
@@ -53,7 +53,7 @@ const Footer = ({
                     rel="noopener noreferrer"
                     className={`group flex items-center gap-2 text-gray-300 hover:text-white transition-all ${link.hiddenOnMd ? 'md:hidden' : ''}`}
                   >
-                    <span className="p-2 rounded-lg bg-gray-800 group-hover:bg-[#a855f7] transition-colors">
+                    <span className="p-2 rounded-md bg-gray-800 group-hover:bg-[#a855f7] transition-colors">
                       {link.icon}
                     </span>
                     <span className="font-medium">{link.title}</span>

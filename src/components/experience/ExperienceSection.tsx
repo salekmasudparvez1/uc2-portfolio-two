@@ -111,7 +111,7 @@ const ExperienceCard = ({ exp, idx, T, align }: any) => (
     whileInView={{ opacity: 1, x: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.5, delay: idx * 0.1 }}
-    className={`group relative bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-[#a855f7]/10 hover:border-[#a855f7]/30 transition-all duration-500 ${
+    className={`group relative bg-white p-8 rounded-md border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-[#a855f7]/10 hover:border-[#a855f7]/30 transition-all duration-500 ${
       align === "right" ? "text-right" : "text-left"
     }`}
   >
@@ -140,7 +140,7 @@ const ExperienceCard = ({ exp, idx, T, align }: any) => (
     </p>
 
     {/* Subtle Glow Background */}
-    <div className="absolute -inset-1 bg-gradient-to-r from-[#a855f7]/0 to-blue-500/0 group-hover:from-[#a855f7]/5 group-hover:to-blue-500/5 rounded-[2rem] -z-10 transition-all duration-500" />
+    <div className="absolute -inset-1 bg-gradient-to-r from-[#a855f7]/0 to-blue-500/0 group-hover:from-[#a855f7]/5 group-hover:to-blue-500/5 rounded-md -z-10 transition-all duration-500" />
   </motion.div>
 );
 

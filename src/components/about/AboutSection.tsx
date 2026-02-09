@@ -116,7 +116,7 @@ const AboutSection = ({
               <motion.span
                 key={i}
                 whileHover={{ y: -2 }}
-                className="px-5 py-2.5 text-sm font-medium rounded-2xl bg-white border border-gray-100 shadow-sm text-gray-700 hover:border-[#a855f7]/40 hover:text-[#a855f7] transition-all"
+                className="px-5 py-2.5 text-sm font-medium rounded-md bg-white border border-gray-100 shadow-sm text-gray-700 hover:border-[#a855f7]/40 hover:text-[#a855f7] transition-all"
               >
                 <T path={`aboutBottom.services.${i}`} value={service} />
               </motion.span>
@@ -161,7 +161,7 @@ const AboutSection = ({
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => fileInputRef.current?.click()}
-                          className="relative w-48 h-56 rounded-3xl overflow-hidden cursor-pointer bg-gray-200 shadow-2xl ring-4 ring-white transition-all group-hover:ring-[#a855f7]/30"
+                          className="relative w-48 h-56 rounded-md overflow-hidden cursor-pointer bg-gray-200 shadow-2xl ring-4 ring-white transition-all group-hover:ring-[#a855f7]/30"
                         >
                           <img
                             src={!imageError ? aboutTop.profileImage : "/avatar.png"}
@@ -185,7 +185,7 @@ const AboutSection = ({
                         </motion.div>
                         
                         {/* Decorative background element */}
-                        <div className="absolute -bottom-4 -right-4 -z-10 w-48 h-56 rounded-3xl bg-[#a855f7]/10 border border-[#a855f7]/20" />
+                        <div className="absolute -bottom-4 -right-4 -z-10 w-48 h-56 rounded-md bg-[#a855f7]/10 border border-[#a855f7]/20" />
                       </div>
                     </div>
                   )}
