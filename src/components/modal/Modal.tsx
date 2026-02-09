@@ -31,7 +31,7 @@ const Modal = memo(({ onClose, children }: ModalProps) => {
             onClose()
         }
         className="
-    absolute top-6 right-6 z-20
+    absolute top-6 right-9 z-20
     rounded-full bg-white/80 backdrop-blur
     p-2 shadow hover:bg-white transition
   "

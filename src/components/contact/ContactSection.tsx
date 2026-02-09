@@ -127,7 +127,7 @@ const ContactSection = ({ contact, updateField }: {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="group relative h-64 p-8 rounded-[2.5rem] bg-[#f8f9fa] border border-transparent hover:border-gray-200 hover:bg-white hover:shadow-2xl flex flex-col justify-between transition-all duration-500"
+              className="group relative h-64 p-8 rounded-md bg-[#f8f9fa] border border-transparent hover:border-gray-200 hover:bg-white hover:shadow-2xl flex flex-col justify-between transition-all duration-500"
             >
               <div className={`text-gray-400 group-hover:scale-110 transition-transform duration-500 ${social.color}`}>
                 {social.icon}
