@@ -14,6 +14,7 @@ interface ProjectSectionProps {
   >;
   updateField?: (path: string, value: string) => void;
   onDataUpdate?: () => void;
+  onShowAllProjects?: () => void;
 }
 
 const INITIAL_VISIBLE = 3;
@@ -22,13 +23,12 @@ const ProjectSection = ({
   projects,
   updateField,
   onDataUpdate,
+  onShowAllProjects,
 }: ProjectSectionProps) => {
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
   const [openModal, setOpenModal] = useState({
     open: false,
     id: 1,
   });
-  const isAllVisible = visibleCount >= projects.length;
 
   return (
     <section className="py-32 w-full">
@@ -43,7 +43,7 @@ const ProjectSection = ({
 
             <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tighter">
               Case{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a855f7] to-blue-500">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-[#a855f7] to-blue-500">
                 Studies
               </span>
             </h2>
@@ -52,7 +52,7 @@ const ProjectSection = ({
 
         {/* Projects Grid */}
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.slice(0, visibleCount).map((project, idx) => (
+          {projects.slice(0, INITIAL_VISIBLE).map((project, idx) => (
             <ProjectCard
               key={project.id}
               project={project}
@@ -68,16 +68,12 @@ const ProjectSection = ({
         {projects.length > INITIAL_VISIBLE && (
           <div className="mt-16 flex justify-center">
             <button
-              onClick={() =>
-                setVisibleCount(
-                  isAllVisible ? INITIAL_VISIBLE : projects.length,
-                )
-              }
+              onClick={() => onShowAllProjects?.()}
               className="px-10 py-4 rounded-md font-semibold text-white
-                bg-gradient-to-r from-[#a855f7] to-blue-500
+                bg-linear-to-r from-[#a855f7] to-blue-500
                 hover:scale-105 transition-transform shadow-lg"
             >
-              {isAllVisible ? "View Less" : "View More Projects"}
+              View More Projects
             </button>
           </div>
         )}

@@ -1,6 +1,6 @@
 
 
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import Footer from "./components/footer/Footer";
 import Section from "./components/common/Section";
 import HeroSection from "./components/hero/HeroSection";
@@ -13,6 +13,7 @@ import { useActiveSectionDetection } from "./hooks/useActiveSectionDetection";
 import { SECTIONS_CONFIG } from "./config/sectionsConfig";
 import { portfolioData } from "./data/portfolioData";
 import Navbar from "./components/navbar/Navbar";
+import AllProjects from "./components/page/AllProjects";
 
 /* Lazy-loaded heavy sections */
 const AboutSection = lazy(() => import("./components/about/AboutSection"));
@@ -27,15 +28,17 @@ const ContactSection = lazy(
   () => import("./components/contact/ContactSection")
 );
 
-/**
- * Main Portfolio Content
- * Separated into own component so it can use ActiveSectionContext
- */
-function PortfolioContent() {
 
+function PortfolioContent() {
+  const [showAllProjects, setShowAllProjects] = useState(false);
 
   // Start detecting active sections
   useActiveSectionDetection();
+
+  // If showing all projects page, render that instead
+  if (showAllProjects) {
+    return <AllProjects onBack={() => setShowAllProjects(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -104,6 +107,7 @@ function PortfolioContent() {
             setCurrentPage={() => {
               // Handle project details if needed
             }}
+            onShowAllProjects={() => setShowAllProjects(true)}
           />
         </Suspense>
       </Section>
