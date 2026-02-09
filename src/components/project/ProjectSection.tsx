@@ -1,15 +1,11 @@
-import { useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import type { Swiper as SwiperType } from "swiper";
-import { Navigation } from "swiper/modules";
-import { ArrowLeft, ArrowRight, Star } from "lucide-react";
-
-// Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
+import { useState } from "react";
+import { Star } from "lucide-react";
 
 import type { ProjectItem } from "../../data/portfolioData";
 import ProjectCard from "./ProjectCard";
+import Modal from "../modal/Modal";
+import { AnimatePresence } from "motion/react";
+import ProjectDetails from "./ProjectDetails";
 
 interface ProjectSectionProps {
   projects: ProjectItem[];
@@ -20,17 +16,23 @@ interface ProjectSectionProps {
   onDataUpdate?: () => void;
 }
 
+const INITIAL_VISIBLE = 3;
+
 const ProjectSection = ({
   projects,
-  setCurrentPage,
   updateField,
   onDataUpdate,
 }: ProjectSectionProps) => {
-  const swiperRef = useRef<SwiperType | null>(null);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const [openModal, setOpenModal] = useState({
+    open: false,
+    id: 1,
+  });
+  const isAllVisible = visibleCount >= projects.length;
 
   return (
-    <section className="py-32 w-full ">
-      <div className="max-w-full mx-auto px-6">
+    <section className="py-32 w-full">
+      <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <div className="space-y-4">
@@ -46,67 +48,55 @@ const ProjectSection = ({
               </span>
             </h2>
           </div>
+        </div>
 
-          {/* Navigation buttons */}
-          <div className="flex gap-4">
-            <button
-              onClick={() => swiperRef.current?.slidePrev()}
-              className="p-4 rounded-2xl bg-white border shadow-sm hover:text-[#a855f7] transition-colors"
-              aria-label="Previous slide"
-            >
-              <ArrowLeft />
-            </button>
+        {/* Projects Grid */}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.slice(0, visibleCount).map((project, idx) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              idx={idx}
+              setOpenModal={setOpenModal}
+              updateField={updateField}
+              onDataUpdate={onDataUpdate}
+            />
+          ))}
+        </div>
 
+        {/* View More Button */}
+        {projects.length > INITIAL_VISIBLE && (
+          <div className="mt-16 flex justify-center">
             <button
-              onClick={() => swiperRef.current?.slideNext()}
-              className="p-4 rounded-2xl bg-white border shadow-sm hover:text-[#a855f7] transition-colors"
-              aria-label="Next slide"
+              onClick={() =>
+                setVisibleCount(
+                  isAllVisible ? INITIAL_VISIBLE : projects.length,
+                )
+              }
+              className="px-10 py-4 rounded-2xl font-semibold text-white
+                bg-gradient-to-r from-[#a855f7] to-blue-500
+                hover:scale-105 transition-transform shadow-lg"
             >
-              <ArrowRight />
+              {isAllVisible ? "View Less" : "View More Projects"}
             </button>
           </div>
-        </div>
-
-        {/* Swiper */}
-        <div className="w-full">
-          <Swiper
-            modules={[Navigation]}
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-            }}
-            spaceBetween={30}
-            slidesPerView={1}
-            loop={projects.length > 3}
-            breakpoints={{
-              640: { 
-                slidesPerView: 1,
-                spaceBetween: 20,
-              },
-              768: { 
-                slidesPerView: 2,
-                spaceBetween: 25,
-              },
-              1024: { 
-                slidesPerView: 3,
-                spaceBetween: 30,
-              },
-            }}
-            className="!pb-4"
-          >
-            {projects.map((project, idx) => (
-              <SwiperSlide key={project.id} className="h-auto">
-                <ProjectCard
-                  project={project}
-                  idx={idx}
-                  setCurrentPage={setCurrentPage}
-                  updateField={updateField}
-                  onDataUpdate={onDataUpdate}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
+        )}
       </div>
+      <AnimatePresence>
+        {openModal.open && (
+          <Modal
+            key="modal"
+            onClose={() => setOpenModal({ open: false, id: 1 })}
+          >
+            <ProjectDetails
+              projects={projects}
+              openModal={openModal}
+              updateField={updateField}
+              onDataUpdate={onDataUpdate}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

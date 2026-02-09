@@ -144,7 +144,7 @@ const AboutSection = ({
                   className="lg:sticky lg:top-32 space-y-8"
                 >
                   <div className="inline-block px-4 py-1.5 rounded-full border border-[#a855f7]/20 bg-[#a855f7]/5 text-[12px] uppercase tracking-widest font-bold text-[#a855f7]">
-                    {section.badge}
+                     {section.badge}
                   </div>
 
                   {idx === 0 && (

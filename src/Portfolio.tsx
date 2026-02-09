@@ -1,179 +1,152 @@
-import { useEffect, useMemo, useState, lazy, Suspense } from "react";
-import Navbar from "./components/navbar/Navbar";
-import HeroSection from "./components/hero/HeroSection";
+
+
+import { lazy, Suspense } from "react";
 import Footer from "./components/footer/Footer";
-import PageWrapper from "./components/page/PageWrapper";
-import { PAGES } from "./types";
-import { portfolioData } from "./data/portfolioData";
-
-import {
-  AnimatePresence,
-  useReducedMotion,
-  motion,
-  type Variants,
-} from "motion/react";
+import Section from "./components/common/Section";
+import HeroSection from "./components/hero/HeroSection";
 import Loader from "./components/loader/Loader";
-import ProjectDetails from "./components/project/ProjectDetails";
 import TestimonialSection from "./components/testimonial/TestimonialSection";
+import {
+  ActiveSectionProvider
+} from "./context/ActiveSectionContext";
+import { useActiveSectionDetection } from "./hooks/useActiveSectionDetection";
+import { SECTIONS_CONFIG } from "./config/sectionsConfig";
+import { portfolioData } from "./data/portfolioData";
+import Navbar from "./components/navbar/Navbar";
 
-/* ---------------- Lazy Pages ---------------- */
+/* Lazy-loaded heavy sections */
 const AboutSection = lazy(() => import("./components/about/AboutSection"));
 const SkillsSection = lazy(() => import("./components/skill/SkillSection"));
 const ExperienceSection = lazy(
-  () => import("./components/experience/ExperienceSection"),
+  () => import("./components/experience/ExperienceSection")
 );
 const ProjectSection = lazy(
-  () => import("./components/project/ProjectSection"),
+  () => import("./components/project/ProjectSection")
 );
 const ContactSection = lazy(
-  () => import("./components/contact/ContactSection"),
+  () => import("./components/contact/ContactSection")
 );
 
-/* ---------------- Component ---------------- */
-const Portfolio = () => {
-  const prefersReducedMotion = useReducedMotion();
-  const isMobile =
-    typeof window !== "undefined" && window.innerWidth < 768;
+/**
+ * Main Portfolio Content
+ * Separated into own component so it can use ActiveSectionContext
+ */
+function PortfolioContent() {
 
 
-  interface Page {
-    page: string;
-    id: number;
-  }
-  const [currentPage, setCurrentPage] = useState<Page>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("currentPage");
-      if (saved) {
-        try {
-          const parsed: Page = JSON.parse(saved); 
-         
-          if (PAGES.some((p) => p === parsed.page)) {
-            return parsed;
-          }
-        } catch {
-          // ignore JSON parse errors
-        }
-      }
-    }
-    return { page: "home", id: 1 };
-  });
-
-  useEffect(() => {
-    localStorage.setItem("currentPage", JSON.stringify(currentPage));
-  }, [currentPage]);
- 
-
-  /* ---------------- Page Animation ---------------- */
-  const pageVariants = useMemo<Variants>(
-    () => ({
-      initial:
-        prefersReducedMotion || isMobile
-          ? { opacity: 1 }
-          : { opacity: 0, y: 16 },
-      animate: {
-        opacity: 1,
-        y: 0,
-        transition: {
-          duration: prefersReducedMotion || isMobile ? 0.01 : 0.25,
-          ease: "easeOut",
-        },
-      },
-      exit:
-        prefersReducedMotion || isMobile
-          ? { opacity: 1 }
-          : {
-              opacity: 0,
-              y: -16,
-              transition: { duration: 0.2, ease: "easeIn" },
-            },
-    }),
-    [prefersReducedMotion, isMobile],
-  );
+  // Start detecting active sections
+  useActiveSectionDetection();
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        userName={portfolioData.userName}
-      />
+      <Navbar userName={portfolioData.userName} />
 
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={currentPage?.id}
-          variants={pageVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="max-w-6xl mx-auto"
-          onAnimationComplete={() => {
-            window.scrollTo({ top: 0, behavior: "instant" });
+      {/* HERO SECTION */}
+      <Section
+        sectionConfig={SECTIONS_CONFIG.home}
+        className="relative"
+      >
+        <HeroSection
+          heroSection={portfolioData.hero}
+          onNavigate={() => {
+            // In section-based navigation, we scroll to sections
+            // instead of changing state
+            const contactElement = document.querySelector(
+              '[data-section-id="contact"]'
+            );
+            contactElement?.scrollIntoView({ behavior: "smooth" });
           }}
+        />
+      </Section>
+
+      {/* ABOUT SECTION */}
+      <Section
+        sectionConfig={SECTIONS_CONFIG.about}
+        className="relative bg-gradient-to-b from-white via-white to-gray-50"
+      >
+        <Suspense fallback={<Loader visible={true} text="Loading..." />}>
+          <AboutSection
+            aboutTop={portfolioData.about?.aboutTop}
+            aboutBottom={portfolioData.about?.aboutBottom}
+            data={portfolioData}
+          />
+        </Suspense>
+      </Section>
+
+      {/* SKILLS SECTION */}
+      <Section
+        sectionConfig={SECTIONS_CONFIG.skill}
+        className="relative"
+      >
+        <Suspense fallback={<Loader visible={true} text="Loading..." />}>
+          <SkillsSection skills={portfolioData.skills} />
+        </Suspense>
+      </Section>
+
+      {/* EXPERIENCE SECTION */}
+      <Section
+        sectionConfig={SECTIONS_CONFIG.experience}
+        className="relative bg-gradient-to-b from-white to-gray-50"
+      >
+        <Suspense fallback={<Loader visible={true} text="Loading..." />}>
+          <ExperienceSection experiences={portfolioData.experiences} />
+        </Suspense>
+      </Section>
+
+      {/* PROJECTS SECTION */}
+      <Section
+        sectionConfig={SECTIONS_CONFIG.project}
+        className="relative"
+      >
+        <Suspense fallback={<Loader visible={true} text="Loading..." />}>
+          <ProjectSection
+            projects={portfolioData.projects}
+            setCurrentPage={() => {
+              // Handle project details if needed
+            }}
+          />
+        </Suspense>
+      </Section>
+
+      {/* TESTIMONIALS SECTION (optional) */}
+      {portfolioData?.testimonials && (
+        <Section
+          sectionConfig={SECTIONS_CONFIG.testimonial}
+          className="relative bg-gradient-to-b from-white to-gray-50"
         >
-          <Suspense
-            fallback={
-              <Loader visible={true} text="Loading page..." />
-            }
-          >
-            {currentPage?.page === "home" && (
-              <PageWrapper>
-                <HeroSection heroSection={portfolioData.hero} onNavigate={setCurrentPage} />
-              </PageWrapper>
-            )}
+          <TestimonialSection testimonials={portfolioData.testimonials} />
+        </Section>
+      )}
 
-            {currentPage?.page  === "about" && (
-              <PageWrapper>
-                <AboutSection
-                  aboutTop={portfolioData.about?.aboutTop}
-                  aboutBottom={portfolioData.about?.aboutBottom}
-                  data={portfolioData}
+      {/* CONTACT SECTION */}
+      <Section
+        sectionConfig={SECTIONS_CONFIG.contact}
+        className="relative"
+      >
+        <Suspense fallback={<Loader visible={true} text="Loading..." />}>
+          <ContactSection contact={portfolioData.contact} />
+        </Suspense>
+      </Section>
 
-                />
-              </PageWrapper>
-            )}
-
-            {currentPage?.page === "skill" && (
-              <PageWrapper>
-                <SkillsSection skills={portfolioData.skills} />
-              </PageWrapper>
-            )}
-
-            {currentPage?.page === "experience" && (
-              <PageWrapper>
-                <ExperienceSection experiences={portfolioData.experiences} />
-              </PageWrapper>
-            )}
-
-            {currentPage?.page === "project" && (
-              <PageWrapper>
-                <ProjectSection projects={portfolioData.projects} setCurrentPage={setCurrentPage} />
-              </PageWrapper>
-            )}
-            {currentPage?.page === "projectDetails" && (
-              <PageWrapper>
-                <ProjectDetails currentPage={currentPage} setCurrentPage={setCurrentPage} projects={portfolioData.projects} />
-              </PageWrapper>
-            )}
-            {
-              currentPage?.page === "testimonial" && (
-                <PageWrapper>
-                  <TestimonialSection testimonials={portfolioData?.testimonials} />
-                </PageWrapper>
-              )
-            }
-
-            {currentPage?.page === "contact" && (
-              <PageWrapper>
-                <ContactSection contact={portfolioData.contact} />
-              </PageWrapper>
-            )}
-          </Suspense>
-        </motion.div>
-      </AnimatePresence>
-
-      <Footer footer={portfolioData.footer} onNavigate={setCurrentPage} />
+      {/* FOOTER */}
+      <Footer
+        footer={portfolioData.footer}
+        onNavigate={() => {
+          const homeElement = document.querySelector(
+            '[data-section-id="home"]'
+          );
+          homeElement?.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
     </div>
   );
-};
+}
 
-export default Portfolio;
+
+export default function Portfolio() {
+  return (
+    <ActiveSectionProvider>
+      <PortfolioContent />
+    </ActiveSectionProvider>
+  );
+}

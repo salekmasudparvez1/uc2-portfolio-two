@@ -1,38 +1,34 @@
-import { useRef, useState } from "react";
-import {
-  ArrowLeft,
-  ExternalLink,
-  Globe,
-  Github,
-  ChevronRight,
-} from "lucide-react";
-import { motion } from "motion/react";
+import { useRef, useState, type FC } from "react";
+import { Globe, Github, ChevronRight, type LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import type { IPortfolioData, ProjectItem } from "../../data/portfolioData";
 import { EditableText } from "../text/EditableText";
 import { uploadService } from "../../service/about/Index";
 
 interface ProjectDetailsProps {
-  currentPage: { page: string; id: number };
-  setCurrentPage: React.Dispatch<
-    React.SetStateAction<{ page: string; id: number }>
-  >;
+  openModal: { open: boolean; id: number };
   projects: ProjectItem[];
   updateField?: (path: string, value: string) => void;
   onDataUpdate?: (d: IPortfolioData) => void;
 }
 
-const ProjectDetails: React.FC<ProjectDetailsProps> = ({
-  currentPage,
-  setCurrentPage,
+const ProjectDetails: FC<ProjectDetailsProps> = ({
+  openModal,
   projects,
   updateField,
   onDataUpdate,
 }) => {
-  const project = projects.find((p) => p.id === currentPage.id);
-  const idx = projects.findIndex((p) => p.id === currentPage.id);
+  const project = projects.find((p) => p.id === openModal.id);
+  const idx = projects.findIndex((p) => p.id === openModal.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  if (!project) return null;
+
+  /**
+   * T Helper Component
+   * Handles the logic between editable text (CMS mode) and static text (View mode)
+   */
   const T = ({
     path,
     value,
@@ -40,7 +36,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     multiline = false,
   }: {
     path: string;
-    value: string | undefined;
+    value?: string;
     className?: string;
     multiline?: boolean;
   }) =>
@@ -55,165 +51,136 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
       <span className={className}>{value}</span>
     );
 
-  if (!project) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
-        Project not found.
-      </div>
-    );
-  }
-
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-[#fafafa]"
+    <motion.div
+      key={project.id}
+      initial={{ opacity: 0, y: 30, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 30, scale: 0.98 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      className="
+        relative w-full max-w-6xl bg-[#fafafa] rounded-md 
+        max-h-[85vh] overflow-y-auto overflow-x-hidden
+        shadow-2xl outline-none
+      "
+      style={{ scrollbarWidth: 'thin', scrollbarColor: '#a855f7 transparent' }}
     >
-      {/* Top Nav */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <button
-            onClick={() => setCurrentPage({ page: "project", id: 0 })}
-            className="group flex items-center gap-2 text-sm font-bold text-gray-900 hover:text-[#a855f7]"
-          >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            Back to Projects
-          </button>
-
-          <a
-            href={project.href}
-            target="_blank"
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gray-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-[#a855f7] transition-all"
-          >
-            Live Preview <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-          {/* Left */}
-          <div className="lg:sticky lg:top-32 space-y-8">
-            <motion.div
-              className="relative rounded-[2rem] overflow-hidden bg-white shadow-2xl group"
-            >
+      <div className="p-8 md:p-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+          
+          {/* LEFT COLUMN: Media & Meta */}
+          <div className="lg:sticky lg:top-0 h-fit space-y-8">
+            <div className="relative rounded-[2rem] overflow-hidden bg-white shadow-lg group aspect-video lg:aspect-square border border-gray-100">
               <img
                 src={project.image}
                 alt={project.title}
-                className="w-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
 
               {onDataUpdate && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="px-6 py-3 rounded-2xl bg-white font-bold text-gray-900"
+                    className="px-6 py-3 rounded-2xl bg-white text-black font-bold shadow-xl active:scale-95 transition"
                   >
                     {isUploading ? "Uploading..." : "Change Image"}
                   </button>
                 </div>
               )}
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
+              
+              <input 
+                ref={fileInputRef} 
+                type="file" 
+                hidden 
+                accept="image/*"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file || !onDataUpdate) return;
                   setIsUploading(true);
                   try {
-                    const updatedData =
-                      await uploadService.uploadImage(file, `project_${idx}`);
-                    if (updatedData) onDataUpdate(updatedData);
+                    const updated = await uploadService.uploadImage(file, `project_${idx}`);
+                    if (updated) onDataUpdate(updated);
+                  } catch (err) {
+                    console.error("Upload failed", err);
                   } finally {
                     setIsUploading(false);
                   }
                 }}
               />
-            </motion.div>
+            </div>
 
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border text-sm text-gray-700">
-                <Globe className="w-4 h-4 text-[#a855f7]" />
-                Deployment: Vercel
-              </div>
-              <div className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border text-sm text-gray-700">
-                <Github className="w-4 h-4 text-[#a855f7]" />
-                Public Repository
-              </div>
+            <div className="flex flex-wrap gap-3">
+              <Badge icon={Globe} label="Live Deployment" />
+              <Badge icon={Github} label="Source Repository" />
             </div>
           </div>
 
-          {/* Right */}
-          <div className="space-y-14">
+          {/* RIGHT COLUMN: Description & Features */}
+          <div className="space-y-12">
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-gray-900">
-                <T
-                  path={`projects.${idx}.title`}
-                  value={project.title}
-                />
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 leading-[1.1]">
+                <T path={`projects.${idx}.title`} value={project.title} />
               </h1>
 
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <div className="text-lg md:text-xl text-gray-500 leading-relaxed font-medium">
                 <T
                   path={`projects.${idx}.description`}
                   value={project.description}
                   multiline
                 />
-              </p>
+              </div>
             </div>
 
-            {/* Features */}
-            <div className="space-y-6">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                <span className="w-8 h-1 rounded-full bg-[#a855f7]" />
-                Key Features
-              </h3>
+            {/* FEATURES SECTION */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-4">
+                <div className="h-[2px] w-12 bg-purple-500" />
+                <h3 className="text-xs uppercase tracking-[0.2em] font-black text-purple-600">
+                  Project Highlights
+                </h3>
+              </div>
 
               <ul className="grid gap-4">
                 {[
                   "Responsive User Interface",
                   "Optimized Performance",
-                  "Modern Component Architecture",
-                  "SEO-Friendly Structure",
+                  "Modern Architecture",
+                  "Secure API Integration"
                 ].map((feat, i) => (
-                  <li
+                  <motion.li
                     key={i}
-                    className="flex items-center gap-4 p-5 rounded-2xl bg-white border hover:border-[#a855f7]/30 transition-all"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * i }}
+                    className="flex items-center gap-4 p-5 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-purple-200 transition-all cursor-default"
                   >
-                    <ChevronRight className="w-5 h-5 text-[#a855f7]" />
-                    <span className="text-gray-800 font-medium">
-                      {feat}
-                    </span>
-                  </li>
+                    <div className="bg-purple-50 p-2 rounded-xl">
+                      <ChevronRight className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <span className="font-semibold text-slate-700">{feat}</span>
+                  </motion.li>
                 ))}
               </ul>
-            </div>
-
-            {/* CTA */}
-            <div className="p-10 rounded-[2.5rem] bg-white border space-y-6">
-              <h4 className="text-2xl font-bold text-gray-900">
-                Interested in the process?
-              </h4>
-              <p className="text-gray-600">
-                I’m available for freelance work or technical consultation.
-              </p>
-              <button
-                onClick={() =>
-                  setCurrentPage({ page: "contact", id: 0 })
-                }
-                className="w-full py-4 rounded-2xl bg-[#a855f7] text-white font-bold hover:bg-gray-900 transition-all"
-              >
-                Discuss this Project
-              </button>
             </div>
           </div>
         </div>
       </div>
-    </motion.section>
+      
+    </motion.div>
   );
 };
+
+/* Badge Helper */
+interface BadgeProps {
+  icon: LucideIcon;
+  label: string;
+}
+
+const Badge: FC<BadgeProps> = ({ icon: Icon, label }) => (
+  <div className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white border border-slate-100 text-sm font-semibold text-slate-600 shadow-sm">
+    <Icon className="w-4 h-4 text-[#a855f7]" />
+    {label}
+  </div>
+);
 
 export default ProjectDetails;

@@ -13,15 +13,16 @@ interface ProjectItem {
   href: string;
 }
 
-const ProjectCard = ({ project, idx, setCurrentPage, updateField, onDataUpdate }: { 
+const ProjectCard = ({ project, idx, setOpenModal, updateField, onDataUpdate }: { 
   project: ProjectItem; 
   idx: number; 
-  setCurrentPage: React.Dispatch<React.SetStateAction<{ page: string; id: number }>>; 
+  setOpenModal: React.Dispatch<React.SetStateAction<{ open: boolean; id: number }>>; 
   updateField?: (path: string, value: string) => void; 
   onDataUpdate?: (d: IPortfolioData) => void 
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,11 +45,12 @@ const ProjectCard = ({ project, idx, setCurrentPage, updateField, onDataUpdate }
 
   return (
     <motion.div 
+      onClick={() => setOpenModal({ open: true, id: project.id })}
       whileHover={{ y: -10 }}
       className="group relative bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-[#a855f7]/10 transition-all duration-500 h-[500px]"
     >
       {/* Image Container */}
-      <div className="relative h-2/3 overflow-hidden bg-gray-100">
+      <div  className="relative h-2/3 overflow-hidden bg-gray-100">
         <img 
           src={project.image} 
           alt={project.title} 
@@ -56,7 +58,7 @@ const ProjectCard = ({ project, idx, setCurrentPage, updateField, onDataUpdate }
         />
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
           <button 
-            onClick={() => setCurrentPage({ page: 'projectDetails', id: project.id })}
+            onClick={() => setOpenModal({ open: true, id: project.id })}
             className="px-4 py-2 flex gap-3 transition-all duration-500 rounded-full bg-white text-gray-900 hover:bg-[#a855f7] hover:text-white transition-colors"
           >
             <Eye className="w-6 h-6" /> View
